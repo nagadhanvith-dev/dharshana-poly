@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { useRef, useState, type FormEvent } from "react";
 import {
   Menu, X, ArrowRight, Phone, Mail, MapPin, ShieldCheck, Award, Leaf,
-  Package, Factory, Sparkles, Star, Quote, CheckCircle2, Truck, Ruler,
+  Package, Factory, Sparkles, Star, Quote, CheckCircle2, Truck, Ruler, MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -550,6 +550,37 @@ function Footer() {
   );
 }
 
+function WhatsAppIcon({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="text-white relative z-10">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004c-1.009 0-2.006-.264-2.88-.731l-.206-.121-2.134.559 1.388-2.08-.097-.19C7.674 17.18 7.04 15.15 7.04 13c0-4.222 3.438-7.657 7.662-7.657 4.223 0 7.657 3.435 7.657 7.657 0 4.222-3.434 7.657-7.657 7.657M19.87 3.24A11.57 11.57 0 0 0 12.002 0C5.412 0 .057 5.355.057 11.946c0 2.096.55 4.14 1.595 5.942L.057 24l6.255-1.64a11.97 11.97 0 0 0 5.69 1.448h.004c6.59 0 11.944-5.355 11.944-11.946 0-3.19-1.242-6.19-3.499-8.45" />
+    </svg>
+  );
+}
+
+function WhatsAppButton() {
+  const message = encodeURIComponent("Hi Dharshana Polymers, I'm interested in LLDPE Silky Bags. Please share pricing and lead time for size __ and quantity __.");
+  return (
+    <a
+      href={`https://wa.me/917019009508?text=${message}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Chat on WhatsApp for bag size and quantity queries"
+      title="Chat on WhatsApp"
+      className="fixed bottom-6 right-6 z-50 group"
+    >
+      <div className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] shadow-[0_10px_30px_-8px_rgba(37,211,102,0.55)] transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
+        <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
+          <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-white/20 rotate-45 translate-y-full group-hover:translate-y-0 transition-transform duration-700" />
+        </div>
+        <WhatsAppIcon size={26} />
+        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-[#0a0b0f]" />
+      </div>
+    </a>
+  );
+}
+
 function Index() {
   return (
     <main className="relative min-h-screen">
@@ -563,6 +594,7 @@ function Index() {
       <Testimonials />
       <Contact />
       <Footer />
+      <WhatsAppButton />
     </main>
   );
 }
