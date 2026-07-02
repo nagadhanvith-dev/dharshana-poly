@@ -574,7 +574,7 @@ function WhatsAppButton() {
         <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
           <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-white/20 rotate-45 translate-y-full group-hover:translate-y-0 transition-transform duration-700" />
         </div>
-        <WhatsAppIcon size={26} className="text-white relative z-10" />
+        <WhatsAppIcon size={26} />
         <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-[#0a0b0f]" />
       </div>
     </a>
