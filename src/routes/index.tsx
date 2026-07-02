@@ -565,17 +565,17 @@ function WhatsAppButton() {
       href={`https://wa.me/917019009508?text=${message}`}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat on WhatsApp for bag size and quantity queries"
+      aria-label="Chat on WhatsApp for bag size and quantity queries. Opens in a new tab."
       title="Chat on WhatsApp"
-      className="fixed bottom-6 right-6 z-50 group"
+      className="fixed bottom-6 right-6 z-50 group outline-none"
     >
-      <div className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] shadow-[0_10px_30px_-8px_rgba(37,211,102,0.55)] transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
-        <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] shadow-[0_10px_30px_-8px_rgba(37,211,102,0.55)] transition-transform transition-shadow duration-300 ease-out outline-none group-hover:scale-110 group-hover:shadow-[0_0_0_6px_rgba(37,211,102,0.25)] group-active:scale-95 group-focus-visible:scale-110 group-focus-visible:ring-2 group-focus-visible:ring-gold/80 group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-[#0a0b0f] group-focus-visible:shadow-[0_0_0_6px_rgba(37,211,102,0.3)]">
+        <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity" />
         <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
-          <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-white/20 rotate-45 translate-y-full group-hover:translate-y-0 transition-transform duration-700" />
+          <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-white/20 rotate-45 translate-y-full group-hover:translate-y-0 group-focus-visible:translate-y-0 transition-transform duration-700" />
         </div>
         <WhatsAppIcon size={26} />
-        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-[#0a0b0f]" />
+        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-[#0a0b0f]" aria-hidden="true" />
       </div>
     </a>
   );
