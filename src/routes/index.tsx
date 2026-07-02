@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { useRef, useState, type FormEvent } from "react";
 import {
   Menu, X, ArrowRight, Phone, Mail, MapPin, ShieldCheck, Award, Leaf,
-  Package, Factory, Sparkles, Star, Quote, CheckCircle2, Truck, Ruler,
+  Package, Factory, Sparkles, Star, Quote, CheckCircle2, Truck, Ruler, MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
