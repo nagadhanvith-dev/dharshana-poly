@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import dpLogoAsset from "@/assets/dp-logo.asset.json";
 import heroBag from "@/assets/hero-bag.jpg";
 import bagMockup from "@/assets/bag-mockup.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -23,7 +24,7 @@ const NAV = [
   { label: "Contact", href: "#contact" },
 ];
 
-const SIZES = ["00", "0", "1", "2", "3", "5", "6", "10"];
+const SIZES = ["00", "0", "1", "2", "3", "5", "7", "10"];
 
 const PROCESS = [
   { title: "Resin Melting", desc: "Virgin LLDPE resin melted at precision temperature." },
@@ -431,6 +432,7 @@ type ContactErrors = Partial<Record<"name" | "size" | "qty", string>>;
 function Contact() {
   const [errors, setErrors] = useState<ContactErrors>({});
   const [status, setStatus] = useState<string>("");
+  const [submitting, setSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const validate = (fd: FormData): ContactErrors => {
@@ -447,8 +449,9 @@ function Contact() {
     return next;
   };
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting) return;
     const form = e.currentTarget;
     const fd = new FormData(form);
     const next = validate(fd);
@@ -461,10 +464,37 @@ function Contact() {
       el?.focus();
       return;
     }
+
+    setSubmitting(true);
+    setStatus("Sending your enquiry…");
+
+    const name = String(fd.get("name") ?? "").trim();
+    const company = String(fd.get("company") ?? "").trim();
+    const bag_size = String(fd.get("size") ?? "");
+    const quantity = Number(String(fd.get("qty") ?? "").trim());
+    const message = String(fd.get("msg") ?? "").trim();
+
+    const { error } = await supabase.from("enquiries").insert({
+      name,
+      company: company || null,
+      bag_size,
+      quantity,
+      message: message || null,
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      setStatus("We couldn't save your enquiry. Please try again or WhatsApp us.");
+      toast.error("Something went wrong", { description: "Please try again in a moment." });
+      return;
+    }
+
     setStatus("Quote request received. Our team will reach out within 1 business day.");
     toast.success("Quote request received", { description: "Our team will reach out within 1 business day." });
     form.reset();
   };
+
 
   return (
     <section id="contact" className="relative py-24" aria-labelledby="contact-heading">
@@ -597,9 +627,11 @@ function Contact() {
           </Field>
           <button
             type="submit"
-            className="btn-gold btn-gold-hover sheen rounded-xl px-8 py-3.5 inline-flex items-center gap-2 w-full md:w-auto justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0b0f]"
+            disabled={submitting}
+            aria-busy={submitting}
+            className="btn-gold btn-gold-hover sheen rounded-xl px-8 py-3.5 inline-flex items-center gap-2 w-full md:w-auto justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0b0f] disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Send Request <ArrowRight size={17} aria-hidden="true" />
+            {submitting ? "Sending…" : "Send Request"} <ArrowRight size={17} aria-hidden="true" />
           </button>
         </form>
       </div>
