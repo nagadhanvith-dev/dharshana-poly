@@ -23,7 +23,7 @@ const NAV = [
   { label: "Contact", href: "#contact" },
 ];
 
-const SIZES = ["00", "0", "1", "2", "3", "5", "6", "10"];
+const SIZES = ["00", "0", "1", "2", "3", "5", "7", "10"];
 
 const PROCESS = [
   { title: "Resin Melting", desc: "Virgin LLDPE resin melted at precision temperature." },
