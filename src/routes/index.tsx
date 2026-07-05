@@ -432,6 +432,7 @@ type ContactErrors = Partial<Record<"name" | "size" | "qty", string>>;
 function Contact() {
   const [errors, setErrors] = useState<ContactErrors>({});
   const [status, setStatus] = useState<string>("");
+  const [submitting, setSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const validate = (fd: FormData): ContactErrors => {
@@ -448,8 +449,9 @@ function Contact() {
     return next;
   };
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting) return;
     const form = e.currentTarget;
     const fd = new FormData(form);
     const next = validate(fd);
@@ -462,10 +464,37 @@ function Contact() {
       el?.focus();
       return;
     }
+
+    setSubmitting(true);
+    setStatus("Sending your enquiry…");
+
+    const name = String(fd.get("name") ?? "").trim();
+    const company = String(fd.get("company") ?? "").trim();
+    const bag_size = String(fd.get("size") ?? "");
+    const quantity = Number(String(fd.get("qty") ?? "").trim());
+    const message = String(fd.get("msg") ?? "").trim();
+
+    const { error } = await supabase.from("enquiries").insert({
+      name,
+      company: company || null,
+      bag_size,
+      quantity,
+      message: message || null,
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      setStatus("We couldn't save your enquiry. Please try again or WhatsApp us.");
+      toast.error("Something went wrong", { description: "Please try again in a moment." });
+      return;
+    }
+
     setStatus("Quote request received. Our team will reach out within 1 business day.");
     toast.success("Quote request received", { description: "Our team will reach out within 1 business day." });
     form.reset();
   };
+
 
   return (
     <section id="contact" className="relative py-24" aria-labelledby="contact-heading">
