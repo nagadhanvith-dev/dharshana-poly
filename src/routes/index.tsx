@@ -426,75 +426,180 @@ function Testimonials() {
   );
 }
 
+type ContactErrors = Partial<Record<"name" | "size" | "qty", string>>;
+
 function Contact() {
+  const [errors, setErrors] = useState<ContactErrors>({});
+  const [status, setStatus] = useState<string>("");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const validate = (fd: FormData): ContactErrors => {
+    const next: ContactErrors = {};
+    const name = String(fd.get("name") ?? "").trim();
+    const size = String(fd.get("size") ?? "");
+    const qtyRaw = String(fd.get("qty") ?? "").trim();
+    const qty = Number(qtyRaw);
+    if (!name) next.name = "Please enter your name.";
+    else if (name.length > 100) next.name = "Name must be under 100 characters.";
+    if (!size) next.size = "Please select a bag size.";
+    if (!qtyRaw) next.qty = "Please enter a quantity.";
+    else if (!Number.isFinite(qty) || qty < 1) next.qty = "Quantity must be at least 1.";
+    return next;
+  };
+
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const next = validate(fd);
+    setErrors(next);
+    const count = Object.keys(next).length;
+    if (count > 0) {
+      const firstKey = Object.keys(next)[0];
+      setStatus(`Please fix ${count} field${count > 1 ? "s" : ""} before submitting.`);
+      const el = form.querySelector<HTMLElement>(`[name="${firstKey}"]`);
+      el?.focus();
+      return;
+    }
+    setStatus("Quote request received. Our team will reach out within 1 business day.");
     toast.success("Quote request received", { description: "Our team will reach out within 1 business day." });
-    (e.target as HTMLFormElement).reset();
+    form.reset();
   };
+
   return (
-    <section id="contact" className="relative py-24">
+    <section id="contact" className="relative py-24" aria-labelledby="contact-heading">
       <div className="mx-auto max-w-7xl px-5 md:px-8 grid lg:grid-cols-5 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div>
             <div className="text-xs tracking-[0.35em] text-gold-gradient uppercase">Contact</div>
-            <h2 className="mt-4 font-display text-4xl md:text-5xl">
+            <h2 id="contact-heading" className="mt-4 font-display text-4xl md:text-5xl">
               Request a <span className="italic text-gold-gradient">Quote</span>
             </h2>
             <p className="mt-4 text-muted-foreground">Tell us your bag size, quantity and timeline. We'll respond with pricing and lead time.</p>
           </div>
           <div className="glass-card rounded-2xl p-6 space-y-4">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gold-gradient flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-gold-gradient flex items-center justify-center shrink-0" aria-hidden="true">
                 <Phone size={16} className="text-[oklch(0.12_0.01_60)]" />
               </div>
               <div>
                 <div className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground">Phone</div>
-                <a href="tel:+917019009508" className="text-foreground hover:text-gold-gradient">+91 70190 09508</a>
+                <a href="tel:+917019009508" className="text-foreground hover:text-gold-gradient rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0b0f]">+91 70190 09508</a>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gold-gradient flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-gold-gradient flex items-center justify-center shrink-0" aria-hidden="true">
                 <Mail size={16} className="text-[oklch(0.12_0.01_60)]" />
               </div>
               <div>
                 <div className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground">Email</div>
-                <a href="mailto:lohithshekarbs@gmail.com" className="text-foreground hover:text-gold-gradient break-all">lohithshekarbs@gmail.com</a>
+                <a href="mailto:lohithshekarbs@gmail.com" className="text-foreground hover:text-gold-gradient break-all rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0b0f]">lohithshekarbs@gmail.com</a>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gold-gradient flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-gold-gradient flex items-center justify-center shrink-0" aria-hidden="true">
                 <MapPin size={16} className="text-[oklch(0.12_0.01_60)]" />
               </div>
               <div>
                 <div className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground">Factory</div>
-                <div className="text-sm text-foreground/90">
+                <address className="not-italic text-sm text-foreground/90">
                   No. 281, 1st B Cross, Kasturi Badavani,<br />
                   Rajagopal Nagar Main Road,<br />
                   Bengaluru – 560058, Karnataka
-                </div>
+                </address>
               </div>
             </div>
           </div>
         </div>
 
-        <form onSubmit={onSubmit} className="lg:col-span-3 glass-card rounded-3xl p-8 md:p-10 space-y-5">
+        <form
+          ref={formRef}
+          onSubmit={onSubmit}
+          noValidate
+          aria-labelledby="contact-heading"
+          aria-describedby="contact-form-status"
+          className="lg:col-span-3 glass-card rounded-3xl p-8 md:p-10 space-y-5"
+        >
+          <div
+            id="contact-form-status"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="sr-only"
+          >
+            {status}
+          </div>
           <div className="grid md:grid-cols-2 gap-5">
-            <Field label="Name"><input required name="name" className={inputCls} placeholder="Your full name" /></Field>
-            <Field label="Company"><input name="company" className={inputCls} placeholder="Business name" /></Field>
-            <Field label="Bag Size Required">
-              <select required name="size" className={inputCls} defaultValue="">
+            <Field id="contact-name" label="Name" required error={errors.name}>
+              <input
+                id="contact-name"
+                name="name"
+                autoComplete="name"
+                maxLength={100}
+                required
+                aria-required="true"
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "contact-name-error" : undefined}
+                className={inputCls}
+                placeholder="Your full name"
+              />
+            </Field>
+            <Field id="contact-company" label="Company">
+              <input
+                id="contact-company"
+                name="company"
+                autoComplete="organization"
+                maxLength={120}
+                className={inputCls}
+                placeholder="Business name"
+              />
+            </Field>
+            <Field id="contact-size" label="Bag Size Required" required error={errors.size}>
+              <select
+                id="contact-size"
+                name="size"
+                required
+                aria-required="true"
+                aria-invalid={!!errors.size}
+                aria-describedby={errors.size ? "contact-size-error" : undefined}
+                className={inputCls}
+                defaultValue=""
+              >
                 <option value="" disabled>Select size</option>
                 {SIZES.map(s => <option key={s} value={s} className="bg-[oklch(0.14_0.01_60)]">Size {s}</option>)}
               </select>
             </Field>
-            <Field label="Quantity"><input required name="qty" type="number" min={1} className={inputCls} placeholder="e.g. 10,000" /></Field>
+            <Field id="contact-qty" label="Quantity" required error={errors.qty}>
+              <input
+                id="contact-qty"
+                name="qty"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                required
+                aria-required="true"
+                aria-invalid={!!errors.qty}
+                aria-describedby={errors.qty ? "contact-qty-error" : undefined}
+                className={inputCls}
+                placeholder="e.g. 10,000"
+              />
+            </Field>
           </div>
-          <Field label="Message">
-            <textarea name="msg" rows={4} className={`${inputCls} resize-none`} placeholder="Timeline, specifications, delivery preferences…" />
+          <Field id="contact-msg" label="Message">
+            <textarea
+              id="contact-msg"
+              name="msg"
+              rows={4}
+              maxLength={1000}
+              className={`${inputCls} resize-none`}
+              placeholder="Timeline, specifications, delivery preferences…"
+            />
           </Field>
-          <button type="submit" className="btn-gold btn-gold-hover sheen rounded-xl px-8 py-3.5 inline-flex items-center gap-2 w-full md:w-auto justify-center">
-            Send Request <ArrowRight size={17} />
+          <button
+            type="submit"
+            className="btn-gold btn-gold-hover sheen rounded-xl px-8 py-3.5 inline-flex items-center gap-2 w-full md:w-auto justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0b0f]"
+          >
+            Send Request <ArrowRight size={17} aria-hidden="true" />
           </button>
         </form>
       </div>
@@ -503,14 +608,39 @@ function Contact() {
 }
 
 const inputCls =
-  "w-full bg-black/40 border border-white/10 focus:border-[oklch(0.82_0.13_82/0.6)] focus:ring-2 focus:ring-[oklch(0.82_0.13_82/0.2)] outline-none rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 transition";
+  "w-full bg-black/40 border border-white/10 focus:border-[oklch(0.82_0.13_82/0.6)] focus-visible:ring-2 focus-visible:ring-[oklch(0.82_0.13_82/0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0b0f] outline-none rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 transition aria-[invalid=true]:border-red-400/70 aria-[invalid=true]:focus-visible:ring-red-400/40";
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  id,
+  label,
+  children,
+  required,
+  error,
+}: {
+  id: string;
+  label: string;
+  children: React.ReactNode;
+  required?: boolean;
+  error?: string;
+}) {
   return (
-    <label className="block">
-      <span className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground">{label}</span>
+    <div className="block">
+      <label htmlFor={id} className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground">
+        {label}
+        {required && (
+          <>
+            <span aria-hidden="true" className="text-gold-gradient ml-1">*</span>
+            <span className="sr-only"> (required)</span>
+          </>
+        )}
+      </label>
       <div className="mt-2">{children}</div>
-    </label>
+      {error && (
+        <p id={`${id}-error`} className="mt-1.5 text-xs text-red-300">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
 
