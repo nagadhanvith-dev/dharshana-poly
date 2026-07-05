@@ -627,9 +627,11 @@ function Contact() {
           </Field>
           <button
             type="submit"
-            className="btn-gold btn-gold-hover sheen rounded-xl px-8 py-3.5 inline-flex items-center gap-2 w-full md:w-auto justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0b0f]"
+            disabled={submitting}
+            aria-busy={submitting}
+            className="btn-gold btn-gold-hover sheen rounded-xl px-8 py-3.5 inline-flex items-center gap-2 w-full md:w-auto justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0b0f] disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Send Request <ArrowRight size={17} aria-hidden="true" />
+            {submitting ? "Sending…" : "Send Request"} <ArrowRight size={17} aria-hidden="true" />
           </button>
         </form>
       </div>
