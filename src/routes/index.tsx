@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import dpLogoAsset from "@/assets/dp-logo.asset.json";
 import heroBag from "@/assets/hero-bag.jpg";
 import bagMockup from "@/assets/bag-mockup.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   component: Index,
